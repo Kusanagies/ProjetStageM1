@@ -1,6 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 from invalidator import ConjectureEvaluator, Invalidator
 import json
+from verifier import IndependentVerifier
 
 # Initialisation du serveur MCP
 # C'est ce nom que l'Agent LLM (Contrôleur) verra
@@ -28,6 +29,8 @@ def invalidate(conjecture: dict, max_iterations: int = 5000, timeout_seconds: in
     
     # 2. Lancer la recherche algorithmique
     raw_result = search_engine.search(max_iterations=max_iterations, timeout_seconds=timeout_seconds)
+    
+    verif_result = IndependentVerifier.verify(conjecture, raw_result["value"])
     
     # 3. Formater la sortie exactement selon les attentes de la Tâche 5 du stage
     if raw_result["status"] == "counterexample_found":
