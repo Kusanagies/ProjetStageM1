@@ -172,7 +172,7 @@ class Invalidator:
         
         # Initialisation
         current_graph = nx.path_graph(5)
-        current_key = nx.to_graph6_bytes(current_graph).decode("ascii").strip()
+        current_key = nx.to_graph6_bytes(current_graph, header=False).decode("ascii").strip()
         current_score = self.evaluator.calculate_score(current_graph)
         self.cache.set(current_key, current_score)
         
@@ -186,12 +186,12 @@ class Invalidator:
                 return {"status": "no_counterexample_found", "reason": "timeout", "time_seconds": round(elapsed, 2), "best_score": best_score}
                 
             if current_score < 0:
-                g6_val = nx.to_graph6_bytes(current_graph).decode("ascii").strip()
+                g6_val = nx.to_graph6_bytes(current_graph, header=False).decode("ascii").strip()
                 return {"status": "counterexample_found", "format": "graph6", "value": g6_val, "score": current_score, "iterations": iteration, "time_seconds": round(elapsed, 2)}
                 
             # Génération du voisinage (exploration locale large)
             neighbors = []
-            for _ in range(neighbor_count):
+            for _ in range(neighbor_count): 
                 candidate_graph = GraphMutator.mutate(current_graph, max_mutations=3)
                 candidate_key = nx.to_graph6_bytes(candidate_graph).decode("ascii").strip()
                 
