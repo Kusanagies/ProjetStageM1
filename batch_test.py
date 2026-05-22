@@ -1,11 +1,16 @@
 import json
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'mcp-invalidator', 'src'))
+
 from verifier import IndependentVerifier
 from invalidator import ConjectureEvaluator, Invalidator
 import time
 
 def run_batch_tests():
     # 1. Charger le lot de conjectures
-    with open('benchmark_test.json', 'r') as f:
+    with open('data/benchmark_test.json', 'r') as f:
         conjectures = json.load(f)
 
     print("="*50)

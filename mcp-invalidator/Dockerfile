@@ -1,15 +1,21 @@
-# Utiliser une image Python officielle légère
-FROM python:3.10-slim
+# On utilise la version 3.12 (identique à votre environnement local)
+FROM python:3.12-slim
 
+# Définir le répertoire de travail principal dans le conteneur
 WORKDIR /app
 
-# Copier et installer les dépendances
+# 1. Copier le fichier requirements.txt depuis la racine du projet
 COPY requirements.txt .
+
+# 2. Installer les dépendances
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier TOUT le code source du dossier
-COPY /src/invalidator.py .
-COPY /src/server.py .
+# 3. Copier le dossier src/ dans le conteneur
+# On copie depuis mcp-invalidator/src vers /app/src
+COPY mcp-invalidator/src/ ./src/
 
-# La commande par défaut lance désormais le serveur MCP
+# 4. Se placer dans le dossier source pour que Python trouve vos fichiers
+WORKDIR /app/src
+
+# 5. Lancer le serveur MCP en mode stdio
 CMD ["python", "server.py"]
