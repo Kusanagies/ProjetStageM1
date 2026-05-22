@@ -8,8 +8,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copier TOUT le code source du dossier
-COPY invalidator.py .
-COPY server.py .
+COPY /src/invalidator.py .
+COPY /src/server.py .
 
 # La commande par défaut lance désormais le serveur MCP
 CMD ["python", "server.py"]

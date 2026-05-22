@@ -1,0 +1,32 @@
+[
+  {
+    "id": "HDR-001",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "density",
+      "relation": "<=",
+      "right_expression": "65/98 + (18/29)*rad - (17/53)*rad**2 + (1/28)*rad**3"
+    },
+    "known_counterexample": "M---zz --z-n----"
+  },
+  {
+    "id": "HDR-033",
+    "graph_class": "planar",
+    "inequality": {
+      "left_invariant": "density",
+      "relation": "<=",
+      "right_expression": "67/50 - (7/57)*Delta"
+    },
+    "known_counterexample": "LOCOOGAGIA--}"
+  },
+  {
+    "id": "HDR-038",
+    "graph_class": "planar",
+    "inequality": {
+      "left_invariant": "diam",
+      "relation": ">=",
+      "right_expression": "2 - avg"
+    },
+    "known_counterexample": "LOCOOGAGIA--}"
+  }
+]
