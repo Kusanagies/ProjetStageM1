@@ -3,3 +3,5 @@ networkx>=3.0
 
 # (Optionnel pour le moment) Si vous voulez visualiser les graphes plus tard
 # matplotlib>=3.7.0
+
+mcp>=1.0.0

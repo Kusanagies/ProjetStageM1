@@ -1,17 +1,15 @@
 # Utiliser une image Python officielle légère
 FROM python:3.10-slim
 
-# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copier le fichier des dépendances
+# Copier et installer les dépendances
 COPY requirements.txt .
-
-# Installer les dépendances (sans garder le cache pour alléger l'image)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier le code source de l'invalidateur
+# Copier TOUT le code source du dossier
 COPY invalidator.py .
+COPY server.py .
 
-# Commande exécutée par défaut lors du lancement du conteneur
-CMD ["python", "invalidator.py"]
+# La commande par défaut lance désormais le serveur MCP
+CMD ["python", "server.py"]
