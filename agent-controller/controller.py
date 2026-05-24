@@ -97,8 +97,8 @@ async def run_controller():
     server_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "mcp-invalidator", "src", "server.py"))
     
     server_params = StdioServerParameters(
-        command="python",
-        args=[server_path]
+        command="docker",
+        args=["run", "-i", "--rm", "mcp-invalidator"]
     )
 
     # Initialisation du client MCP

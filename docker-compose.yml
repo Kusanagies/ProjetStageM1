@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # --- LES OUTILS (Build uniquement) ---
+  # Le profil "tools" empêche Compose de les lancer en continu.
+  # Ils ne servent qu'à être construits et stockés comme images.
+  mcp-invalidator:
+    build:
+      context: .
+      dockerfile: mcp-invalidator/Dockerfile
+    image: mcp-invalidator
+    profiles: ["tools"] 
+
+  mcp-generator:
+    build:
+      context: .
+      dockerfile: mcp-conjecture-generator/Dockerfile
+    image: mcp-generator
+    profiles: ["tools"]
+
+  mcp-prover:
+    build:
+      context: .
+      dockerfile: mcp-prover/Dockerfile
+    image: mcp-prover
+    profiles: ["tools"]
+
+  # --- L'AGENT ORCHESTRATEUR ---
+  # C'est le seul conteneur qui va vraiment "tourner".
+  agent-controller:
+    build:
+      context: .
+      dockerfile: agent-controller/Dockerfile
+    image: agent-controller
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Pour joindre Ollama
+    volumes:
+      # On partage le socket Docker. 
+      # Cela permet à l'agent de lancer les autres conteneurs !
+      - /var/run/docker.sock:/var/run/docker.sock
