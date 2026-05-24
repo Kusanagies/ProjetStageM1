@@ -18,5 +18,135 @@
       "right_expression": "67/50 - (7/57)*Delta"
     },
     "known_counterexample": "HI[GOOH"
+  },
+  {
+    "id": "HDR-014",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "diam",
+      "relation": "<=",
+      "right_expression": "2 * rad - 1"
+    },
+    "known_counterexample": "E?w_"
+  },
+  {
+    "id": "HDR-022",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "Delta",
+      "relation": "<=",
+      "right_expression": "avg + 1.5"
+    },
+    "known_counterexample": "F~~~_"
+  },
+  {
+    "id": "HDR-038",
+    "graph_class": "planar",
+    "inequality": {
+      "left_invariant": "diam",
+      "relation": ">=",
+      "right_expression": "2 - avg"
+    },
+    "known_counterexample": "LOCOOGAGIA--}"
+  },
+  {
+    "id": "HDR-042",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "Delta",
+      "relation": "<=",
+      "right_expression": "avg * 2"
+    },
+    "known_counterexample": "F~~~_"
+  },
+  {
+    "id": "HDR-055",
+    "graph_class": "tree",
+    "inequality": {
+      "left_invariant": "diam",
+      "relation": ">=",
+      "right_expression": "n / 2"
+    },
+    "known_counterexample": "E~w_"
+  },
+  {
+    "id": "HDR-061",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "density",
+      "relation": ">=",
+      "right_expression": "1 / rad"
+    },
+    "known_counterexample": "I?@A?_~_"
+  },
+  {
+    "id": "HDR-077",
+    "graph_class": "tree",
+    "inequality": {
+      "left_invariant": "Delta",
+      "relation": "<=",
+      "right_expression": "n - 2"
+    },
+    "known_counterexample": "E~w_"
+  },
+  {
+    "id": "HDR-089",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "rad",
+      "relation": "<=",
+      "right_expression": "n / 3"
+    },
+    "known_counterexample": "G?@A?__"
+  },
+  {
+    "id": "HDR-094",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "diam",
+      "relation": "<=",
+      "right_expression": "rad + 1"
+    },
+    "known_counterexample": "G?@A?__"
+  },
+  {
+    "id": "HDR-102",
+    "graph_class": "bipartite",
+    "inequality": {
+      "left_invariant": "m",
+      "relation": ">=",
+      "right_expression": "n * 1.5"
+    },
+    "known_counterexample": "E?~_"
+  },
+  {
+    "id": "HDR-110",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "avg",
+      "relation": "<=",
+      "right_expression": "delta + 1"
+    },
+    "known_counterexample": "G?w__"
+  },
+  {
+    "id": "HDR-125",
+    "graph_class": "planar",
+    "inequality": {
+      "left_invariant": "rad",
+      "relation": ">=",
+      "right_expression": "3"
+    },
+    "known_counterexample": "I?@A?_~_"
+  },
+  {
+    "id": "HDR-140",
+    "graph_class": "connected",
+    "inequality": {
+      "left_invariant": "diam",
+      "relation": "<=",
+      "right_expression": "n - delta"
+    },
+    "known_counterexample": "H?@A?__"
   }
 ]

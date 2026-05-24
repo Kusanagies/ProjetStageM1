@@ -1,0 +1,16 @@
+ID,Classe,Invariant_Gauche,Relation,Temps_Sec,Iterations,Statut,Graphe_Trouve_g6,Faux_Positif_Rejete
+HDR-001,connected,density,<=,0.249,43,Succès,JxE?OGA?GA_,Non
+HDR-033,planar,density,<=,0.021,2,Échec (Rejeté),,Oui
+HDR-014,connected,diam,<=,0.0,0,Succès,DhC,Non
+HDR-022,connected,Delta,<=,0.004,1,Succès,FNCO_,Non
+HDR-038,planar,diam,>=,30.003,10000,Timeout (timeout),,Non
+HDR-042,connected,Delta,<=,0.003,1,Échec (Rejeté),,Oui
+HDR-055,tree,diam,>=,0.017,3,Succès,K`H_GGC?G@?C,Non
+HDR-061,connected,density,>=,0.0,0,Succès,DhC,Non
+HDR-077,tree,Delta,<=,0.008,2,Succès,EXG_,Non
+HDR-089,connected,rad,<=,0.0,0,Succès,DhC,Non
+HDR-094,connected,diam,<=,0.0,0,Succès,DhC,Non
+HDR-102,bipartite,m,>=,0.001,0,Succès,DhC,Non
+HDR-110,connected,avg,<=,0.012,2,Succès,HlEO_Q?,Non
+HDR-125,planar,rad,>=,0.001,0,Succès,DhC,Non
+HDR-140,connected,diam,<=,15.218,10000,Timeout (max_iterations_reached),,Non
