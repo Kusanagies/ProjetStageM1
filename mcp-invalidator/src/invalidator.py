@@ -4,9 +4,6 @@ import time
 import math
 from collections import OrderedDict
 
-# ==========================================
-# 1. OUTILS D'INVARIANTS ET D'ÉVALUATION (JSON)
-# ==========================================
 class GraphInvariants:
     @staticmethod
     def calculate_all(G):
@@ -63,11 +60,8 @@ class ConjectureEvaluator:
         elif relation == ">=": return left_val - right_val
         return float('inf')
 
-# ==========================================
-# 2. SYSTÈME DE CACHE (Inspiré de votre code de référence)
-# ==========================================
 class GraphScoreCache:
-    """Cache LRU pour éviter de recalculer les invariants des graphes déjà visités."""
+    
     def __init__(self, max_size=5000):
         self._data = OrderedDict()
         self._limit = max_size
@@ -84,22 +78,18 @@ class GraphScoreCache:
         if len(self._data) > self._limit:
             self._data.popitem(last=False)
 
-# ==========================================
-# 3. MUTATIONS SIMPLES ET STRUCTURÉES
-# ==========================================
 class GraphMutator:
     @staticmethod
     def mutate(G, max_mutations=2):
-        """Applique entre 1 et max_mutations à un graphe."""
+        
         mutated = G.copy()
         
-        # Liste des fonctions de mutations disponibles (simples et macro)
         mutations_funcs = [
             GraphMutator._mutation_add_edge,
             GraphMutator._mutation_remove_edge,
             GraphMutator._mutation_add_vertex,
             GraphMutator._mutation_remove_vertex,
-            GraphMutator._mutation_replace_by_star # Macro-mutation !
+            GraphMutator._mutation_replace_by_star
         ]
         
         for _ in range(random.randint(1, max_mutations)):
@@ -139,13 +129,12 @@ class GraphMutator:
 
     @staticmethod
     def _mutation_replace_by_star(G):
-        """Macro-mutation: remplace un sommet par une étoile (très utile en théorie des graphes)."""
+        
         if G.number_of_nodes() < 3: return G
         v = random.choice(list(G.nodes()))
         neighbors = list(G.neighbors(v))
         G.remove_node(v)
         
-        # Ajout de l'étoile (un centre et 3 branches par exemple)
         center = G.number_of_nodes()
         G.add_node(center)
         for i in range(1, 4):
@@ -153,25 +142,135 @@ class GraphMutator:
             G.add_node(branch)
             G.add_edge(center, branch)
             
-        # Reconnecter les anciens voisins au centre
         for n in neighbors:
             if G.has_node(n): G.add_edge(n, center)
             
         return nx.convert_node_labels_to_integers(G)
 
-# ==========================================
-# 4. LE MOTEUR DE RECHERCHE LOCALE (Heuristique Avancée)
-# ==========================================
+    @staticmethod
+    def mutate_tree(G, max_mutations=2):
+        mutated = G.copy()
+        for _ in range(random.randint(1, max_mutations)):
+            mutated = GraphMutator._tree_move_leaf(mutated)
+        return mutated
+
+    @staticmethod
+    def _tree_move_leaf(G):
+        leaves = [v for v in G.nodes() if G.degree(v) == 1]
+        if not leaves or G.number_of_nodes() < 3:
+            return G
+        leaf = random.choice(leaves)
+        parent = list(G.neighbors(leaf))[0]
+        candidates = [v for v in G.nodes() if v != leaf and v != parent]
+        if not candidates:
+            return G
+        G.remove_edge(leaf, parent)
+        G.add_edge(leaf, random.choice(candidates))
+        return G
+
+    @staticmethod
+    def mutate_planar(G, max_mutations=2):
+        mutated = G.copy()
+        for _ in range(random.randint(1, max_mutations)):
+            func = random.choice([
+                GraphMutator._planar_add_edge,
+                GraphMutator._mutation_remove_edge,
+                GraphMutator._mutation_add_vertex,
+                GraphMutator._mutation_remove_vertex,
+            ])
+            mutated = func(mutated)
+        return mutated
+
+    @staticmethod
+    def _planar_add_edge(G):
+        if G.number_of_nodes() < 2:
+            return G
+        nodes = list(G.nodes())
+        random.shuffle(nodes)
+        for u in nodes:
+            for v in nodes:
+                if u != v and not G.has_edge(u, v):
+                    G.add_edge(u, v)
+                    if nx.check_planarity(G)[0]:
+                        return G
+                    G.remove_edge(u, v)
+        return G
+
+    @staticmethod
+    def mutate_bipartite(G, max_mutations=2):
+        mutated = G.copy()
+        for _ in range(random.randint(1, max_mutations)):
+            func = random.choice([
+                GraphMutator._bipartite_add_edge,
+                GraphMutator._mutation_remove_edge,
+                GraphMutator._bipartite_add_vertex,
+                GraphMutator._mutation_remove_vertex,
+            ])
+            mutated = func(mutated)
+        return mutated
+
+    @staticmethod
+    def _bipartite_add_edge(G):
+        if not nx.is_bipartite(G) or G.number_of_nodes() < 2:
+            return G
+        top, bottom = nx.bipartite.sets(G)
+        top, bottom = list(top), list(bottom)
+        if not top or not bottom:
+            return G
+        G.add_edge(random.choice(top), random.choice(bottom))
+        return G
+
+    @staticmethod
+    def _bipartite_add_vertex(G):
+        if not nx.is_bipartite(G) or G.number_of_nodes() < 2:
+            return G
+        top, bottom = nx.bipartite.sets(G)
+        top, bottom = list(top), list(bottom)
+        new_node = max(G.nodes()) + 1
+        if len(top) <= len(bottom):
+            G.add_node(new_node)
+            if bottom:
+                G.add_edge(new_node, random.choice(bottom))
+        else:
+            G.add_node(new_node)
+            if top:
+                G.add_edge(new_node, random.choice(top))
+        return G
+
 class Invalidator:
     def __init__(self, evaluator):
         self.evaluator = evaluator
         self.cache = GraphScoreCache(max_size=5000)
 
+    def _get_mutator_and_start(self):
+        g_class = self.evaluator.conjecture.get("graph_class", "connected")
+        if g_class == "tree":
+            return GraphMutator.mutate_tree, nx.random_labeled_tree(6)
+        elif g_class == "planar":
+            return GraphMutator.mutate_planar, nx.path_graph(5)
+        elif g_class == "bipartite":
+            return GraphMutator.mutate_bipartite, nx.complete_bipartite_graph(3, 3)
+        else:
+            return GraphMutator.mutate, nx.path_graph(5)
+
+    def _random_restart(self):
+        g_class = self.evaluator.conjecture.get("graph_class", "connected")
+        if g_class == "tree":
+            return nx.random_labeled_tree(random.randint(4, 10))
+        elif g_class == "planar":
+            G = nx.path_graph(random.randint(4, 10))
+            for _ in range(5):
+                G = GraphMutator._planar_add_edge(G)
+            return G
+        elif g_class == "bipartite":
+            return nx.complete_bipartite_graph(random.randint(2, 6), random.randint(2, 6))
+        else:
+            return nx.erdos_renyi_graph(random.randint(5, 12), 0.4)
+
     def search(self, max_iterations=5000, timeout_seconds=120, neighbor_count=15, stagnation_limit=20):
         start_time = time.time()
         
-        # Initialisation
-        current_graph = nx.path_graph(5)
+        mutate_fn, current_graph = self._get_mutator_and_start()
         current_key = nx.to_graph6_bytes(current_graph, header=False).decode("ascii").strip()
         current_score = self.evaluator.calculate_score(current_graph)
         self.cache.set(current_key, current_score)
@@ -189,13 +288,11 @@ class Invalidator:
                 g6_val = nx.to_graph6_bytes(current_graph, header=False).decode("ascii").strip()
                 return {"status": "counterexample_found", "format": "graph6", "value": g6_val, "score": current_score, "iterations": iteration, "time_seconds": round(elapsed, 2)}
                 
-            # Génération du voisinage (exploration locale large)
             neighbors = []
             for _ in range(neighbor_count): 
-                candidate_graph = GraphMutator.mutate(current_graph, max_mutations=3)
+                candidate_graph = mutate_fn(current_graph, max_mutations=3)
                 candidate_key = nx.to_graph6_bytes(candidate_graph).decode("ascii").strip()
                 
-                # Utilisation du cache
                 cached_score = self.cache.get(candidate_key)
                 if cached_score is not None:
                     candidate_score = cached_score
@@ -203,7 +300,6 @@ class Invalidator:
                     candidate_score = self.evaluator.calculate_score(candidate_graph)
                     self.cache.set(candidate_key, candidate_score)
                 
-                # Si le graphe est valide (score != inf), on l'ajoute aux voisins
                 if candidate_score != float('inf'):
                     neighbors.append((candidate_graph, candidate_score))
             
@@ -211,10 +307,8 @@ class Invalidator:
                 no_improve_counter += 1
                 continue
                 
-            # Sélection du meilleur voisin
             best_neighbor, best_neighbor_score = min(neighbors, key=lambda x: x[1])
             
-            # Mise à jour
             if best_neighbor_score <= current_score:
                 current_graph = best_neighbor
                 current_score = best_neighbor_score
@@ -226,10 +320,9 @@ class Invalidator:
             else:
                 no_improve_counter += 1
                 
-            # Gestion de la stagnation (Reset si on est bloqué sur un minimum local)
             if no_improve_counter >= stagnation_limit:
                 resets += 1
-                current_graph = nx.erdos_renyi_graph(random.randint(5, 12), 0.4) # Graphe aléatoire
+                current_graph = self._random_restart()
                 current_score = self.evaluator.calculate_score(current_graph)
                 no_improve_counter = 0
 
